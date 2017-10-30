@@ -1,0 +1,105 @@
+machine machine1 refines machine0  sees ctx0 
+
+variables user content chat active chatcontent muted toread inactive 
+
+invariants
+  @invr11 toread ∈ user ↔ user // unread status
+  @invr12 toread ⊆ chat // unread status is part of chat content
+  @invr13 inactive ⊆ chat // if chat is inactive, the new
+  @invr14 active ∪ toread ∪ inactive = chat
+  @invr15 active ∩ toread = ∅
+  @invr16 active ∩ inactive = ∅ 
+  /* event remove_content // US-04
+     extends remove_content
+     end */
+
+events
+  event INITIALISATION extends INITIALISATION 
+    then
+      @initr11 toread ≔ ∅
+      @initr12 inactive ≔ ∅
+  end
+
+  event create_chat_session // US-01
+  extends create_chat_session 
+    then
+      @act2 inactive ≔ inactive ∪ {u1 ↦   u2}
+  end
+
+  event select_chat // US-02
+  extends select_chat 
+    then
+      @act1r1 toread ≔  toread ∖ {u1 ↦ u2}
+      @act2r1 inactive ≔ (inactive ∪ ({u1} ◁  active))∖ {u1 ↦ u2}
+  end
+
+  event chatting 
+  /* US-03
+     Send a text message or a content during a chat session */
+  extends chatting 
+    then
+      @act4 toread ≔ toread ∪ ({u2 ↦ u1} ∖ active)
+  end
+
+  event delete_content // US-04
+  extends delete_content 
+  end
+
+  event remove_content // US-04
+  extends remove_content 
+  end
+
+  event delete_chat_session // US-05
+  extends delete_chat_session 
+    then
+      @act1r1 toread ≔ toread ∖  {u1 ↦ u2}
+      @act2r1 inactive ≔     inactive ∖ {u1 ↦   u2}
+  end
+
+  event mute_chat // US-06
+  extends mute_chat 
+    then
+      @act1r1 toread ≔ toread  ∖  {u1 ↦ u2}
+      @act2r1 inactive ≔     inactive ∪ {u1 ↦   u2}
+  end
+
+  event unmute_chat // US-07
+  extends unmute_chat 
+    then
+      @act1r1 inactive ≔     inactive ∖{u1 ↦   u2}
+  end
+
+  event broadcast // US-08
+  extends broadcast 
+    then
+      @act4 toread ≔ toread ∪ ((ul × {u1}) ∖ active)
+      @act5 inactive ≔  inactive ∖ (ul × {u1})
+  end
+
+  event forward // US-09
+  extends forward 
+    then
+      @act1r1 toread ≔ toread ∪ (((ul × {u}) ∪ ({u} × ul)) ∖  active)
+      @act2r1 inactive ≔ inactive ∪ (((ul × {u}) ∪ ({u} × ul)) ∖ active)
+  end
+
+  event unselect_chat // US-10
+  extends unselect_chat 
+    then
+      @act1r1 inactive ≔ inactive ∪ {u1 ↦ u2}
+  end
+
+  event reading_chat 
+  /* EX-02
+     read unmuted chat session */
+    any u1 u2 
+    where
+      @grd1 u1 ∈ user ∧ u2∈ user
+      @grd2 u1 ↦ u2 ∈ chat
+      @grd3 active ∩ {u1 ↦   u2} ∈ ∅
+      @grd4 muted ∩ {u1 ↦   u2} ∈ ∅
+    then
+      @act1 toread ≔  toread ∖ {u1 ↦   u2}
+      @act2 active ≔ active  ∪ {u1 ↦   u2}
+  end
+end

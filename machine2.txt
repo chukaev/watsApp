@@ -1,0 +1,62 @@
+machine machine2 refines machine1  sees ctx0 
+
+variables user content chat active chatcontent muted toread inactive owner 
+
+invariants
+  @invr21 owner ∈ content → user
+  @invr22 ∀ cc, uu1, uu2 · cc ∈ content ∧ uu1 ∈ user ∧ uu2 ∈ user ∧ (cc ↦ uu1) ∈ owner ⇒ (cc ↦ uu2) ∉ owner
+
+events
+  event INITIALISATION extends INITIALISATION 
+    then
+      @initr21 owner ≔ ∅
+  end
+
+  event create_chat_session // US-01
+  extends create_chat_session 
+  end
+
+  event select_chat // US-02
+  extends select_chat 
+  end
+
+  event chatting // US-03
+  extends chatting 
+    then
+      @act2r1 owner ≔  owner ∪ {c ↦ u1}
+  end
+
+  event delete_content // US-04
+  extends delete_content 
+  end
+
+  event remove_content // US-04
+  extends remove_content 
+  end
+
+  event delete_chat_session // US-05
+  extends delete_chat_session 
+  end
+
+  event mute_chat // US-06
+  extends mute_chat 
+  end
+
+  event unmute_chat // US-07
+  extends unmute_chat 
+  end
+
+  event broadcast // US-08
+  extends broadcast 
+    then
+      @act2r1 owner ≔ owner ∪ {c ↦ u1}
+  end
+
+  event forward // US-09
+  extends forward 
+  end
+
+  event unselect_chat // US-10
+  extends unselect_chat 
+  end
+end
