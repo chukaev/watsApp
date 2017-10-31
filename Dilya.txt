@@ -18,7 +18,7 @@ events
   event INITIALISATION
     then
       @init1 user ≔  ∅
-      @init2 content ≔ ∅
+      @init2 content ≔∅
       @init3 chat ≔ ∅
       @init4 active ≔ ∅
       @init5 chatcontent ≔ ∅
@@ -224,6 +224,28 @@ events
    //   @act4 chatcontent ≔  chatcontent ∖ {(u1 ↦ u2) ↦ chatcontent(u1 ↦ u2)}
   end
 
+  event delete_chat_session2
+  /* US-05
+     delete existing active chat session with all associated content
+     associated content = chatcontent */
+    any u1 u2
+    where
+      @grd1 u1 ∈ user ∧ u2 ∈ user
+      @grd2 u1 ↦ u2 ∈ chat
+      @grd3 u1 ↦ u2 ∈ active
+    then
+      @act1 chat ≔  chat ∖ {u1 ↦ u2}
+      @act2 active ≔  active ∖ {u1 ↦ u2}
+      @act3 muted ≔  muted ∖  {u1 ↦ u2}
+   	  @act4 contentchat ≔ contentchat  { ct · ct ∈ dom(contentchat) ∣ (ct ↦ (contentchat(ct) ∖ {u1 ↦   u2}))}
+	  @act5 chatcontent ≔ ((chatcontent ∖ {u1 ↦ {u2↦ {ct · ct ∈ dom(contentchat) ∧ u2 ↦   u1 ∉  contentchat(ct) ∣  ct}}}) ∖
+	  {u2 ↦   {u1 ↦ {ct · ct ∈ dom(contentchat) ∧ u1 ↦ u2 ∉ contentchat(ct) ∣ ct}}})  ∪
+	  {u1 ↦ (chatcontent(u1)  {u2 ↦ (chatcontent(u1)(u2) ∖ {cc · cc ∈ dom(contentchat) ∧ (u2 ↦ u1)∉contentchat(cc) ∣  cc})})} ∪
+	   {u2 ↦ (chatcontent(u2)  {u1 ↦ (chatcontent(u2)(u1) ∖ { cc · cc ∈ dom(contentchat) ∧ (u1 ↦ u2)∉contentchat(cc) ∣ cc } )})}
+	  @act8 content ≔ content ∖  {ct · ct ∈ dom(contentchat) ∧ u1 ↦ u2 ∉  contentchat(ct) ∣  ct}
+	  @act9 owner ≔  owner ∖ {ct · ct ∈ dom(contentchat) ∧ (contentchat(ct) ∖ {u1 ↦ u2} = ∅ ) ∣  ct ↦ owner(ct) }
+   	end
+
   event mute_chat
   /* US-06
      mute existing chat */
@@ -250,7 +272,7 @@ events
       @act1 muted ≔  muted ∖  {u1 ↦ u2}
   end
 
-  event broadcast
+  event forward1
   /* US-08
      send existing or new one content only to existing unmuted chats */
     any u1 ul c
@@ -266,23 +288,63 @@ events
       @act3 owner ≔  owner ∪ {c ↦ u1}
       @act4 contentchat ≔  contentchat ∪{c ↦( ({u1}×ul) ∪ (ul×{u1}))}
 
-      @act5 chatcontent ≔ chatcontent  {u1 ↦ { u · u ∈ ul ∣   u ↦ {c} ∪ {cc · cc ∈ content ∧ (u1 ↦ u) ∈ contentchat(cc) ∣ cc }  }}
+      @act5 chatcontent ≔ chatcontent  {u1 ↦ { u · u ∈ ul ∣   u ↦ ({c} ∪ {cc · cc ∈ content ∧ (u1 ↦ u) ∈ contentchat(cc) ∣ cc } ) }}
   end
 
-  event forward
+    event forward2
+  /* US-08
+     send existing or new one content only to existing unmuted chats */
+    any u1 ul c
+    where
+      @grd1 u1 ∈ user ∧  ul ⊆ user
+      @grd2 ({u1} × ul) ⊆ chat
+      @grd3 ({u1} × ul) ∩ muted = ∅
+      @grd4 (ul × {u1}) ∩ muted = ∅
+      @grd5 c ∈ content
+    then
+      @act1 chat ≔ chat ∪ (ul × {u1})
+      @act4 contentchat ≔  contentchat  {c ↦( contentchat(c) ∪ (({u1}×ul) ∪ (ul×{u1})))}
+
+      @act5 chatcontent ≔ chatcontent  {u1 ↦ { u · u ∈ ul ∣   u ↦ ({c} ∪ {cc · cc ∈ content ∧ (u1 ↦ u) ∈ contentchat(cc) ∣ cc } ) }}
+  end
+
+  event broadcast1
   /* US-09
      Forward existed content to a group of users. */
-    any u ul c
+    any u1 ul c
     where
-      @grd1 u ∈ user
+      @grd1 u1 ∈ user
       @grd2 ul ⊂ user
-      @grd3 ({u} × ul) ∩ muted = ∅
-      @grd4 (ul × {u}) ∩ muted = ∅
+      @grd3 ({u1} × ul) ∩ muted = ∅
+      @grd4 (ul × {u1}) ∩ muted = ∅
       @grd5 c ∈ content
       //@grd6 ∃ ut · ut ∈ chat[{u}] ∧ c ∈ chatcontent(u↦ut)
     then
-      @act1 chat ≔ chat ∪ (ul × {u}) ∪ ({u} × ul)
-    //  @act2 chatcontent ≔ chatcontent  {uu · uu ∈ ({u}×ul)∪(ul×{u})∣ uu ↦ (chatcontent(uu)∪{c})}
+      @act1 chat ≔ chat ∪ (ul × {u1}) ∪ ({u1} × ul)
+      @act4 contentchat ≔  contentchat  {c ↦( contentchat(c) ∪ (({u1}×ul) ∪ (ul×{u1})))}
+
+      @act5 chatcontent ≔ chatcontent  {u1 ↦ { u · u ∈ ul ∣   u ↦ ({c} ∪ {cc · cc ∈ content ∧ (u1 ↦ u) ∈ contentchat(cc) ∣ cc } ) }}
+  end
+
+    event broadcast2
+  /* US-09
+     Forward existed content to a group of users. */
+    any u1 ul c
+    where
+      @grd1 u1 ∈ user
+      @grd2 ul ⊂ user
+      @grd3 ({u1} × ul) ∩ muted = ∅
+      @grd4 (ul × {u1}) ∩ muted = ∅
+      @grd5 c ∈ CONTENT∖ content
+      //@grd6 ∃ ut · ut ∈ chat[{u}] ∧ c ∈ chatcontent(u↦ut)
+    then
+      @act1 chat ≔ chat ∪ (ul × {u1}) ∪ ({u1} × ul)
+      @act2 content ≔  content ∪  {c}
+      @act3 owner ≔  owner ∪ {c ↦ u1}
+
+      @act4 contentchat ≔  contentchat ∪ {c ↦({u1}×ul) ∪ (ul×{u1})}
+
+      @act5 chatcontent ≔ chatcontent  {u1 ↦ { u · u ∈ ul ∣   u ↦ ({c} ∪ {cc · cc ∈ content ∧ (u1 ↦ u) ∈ contentchat(cc) ∣ cc } ) }}
   end
 
   event unselect_chat
