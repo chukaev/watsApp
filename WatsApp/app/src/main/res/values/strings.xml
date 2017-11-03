@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">WatsApp</string>
+    <string name="message_hint">Write a message…</string>
+    <string name="no_sessions_found">No sessions found!</string>
+    <string name="db_ref">https://models-chat.firebaseio.com/</string>
+    <string name="empty">empty</string>
+</resources>

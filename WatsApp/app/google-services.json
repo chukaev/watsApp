@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "743461565139",
+    "firebase_url": "https://models-chat.firebaseio.com",
+    "project_id": "models-chat",
+    "storage_bucket": "models-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743461565139:android:5d156f1a16b055e8",
+        "android_client_info": {
+          "package_name": "models.team1.watsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743461565139-pakt0n42i96su3lijk1gc64qjjahbkgr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARymrVuKxHiqesXrcFavA1-uuFBjtKgnY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
