@@ -10,12 +10,11 @@ import android.widget.ScrollView;
 
 import com.firebase.client.Firebase;
 import com.firebase.client.ServerValue;
+import com.watsapp.R;
+import com.watsapp.UserDetails;
 
 import java.util.HashMap;
 
-/**
- * Created by yuriy on 02/11/2017.
- */
 public class Broadcast extends AppCompatActivity {
 
     ImageView sendButton;

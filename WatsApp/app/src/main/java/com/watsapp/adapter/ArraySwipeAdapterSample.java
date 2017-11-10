@@ -2,6 +2,7 @@ package com.watsapp.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -12,11 +13,6 @@ import com.daimajia.swipe.adapters.ArraySwipeAdapter;
 
 import java.util.List;
 
-/**
- * Sample usage of ArraySwipeAdapter.
- *
- * @param <T>
- */
 public class ArraySwipeAdapterSample<T> extends ArraySwipeAdapter {
 
     private final Sessions context;
@@ -33,6 +29,7 @@ public class ArraySwipeAdapterSample<T> extends ArraySwipeAdapter {
         return R.id.swipe;
     }
 
+    @NonNull
     @Override
     public View getView(final int position, final View convertView, ViewGroup parent) {
 
@@ -46,9 +43,10 @@ public class ArraySwipeAdapterSample<T> extends ArraySwipeAdapter {
             @Override
             public void onClick(View view) {
                 String user = (String) getItem(position);
-                context.deleteSession(user);
-                remove(user);
-                notifyDataSetChanged();
+                if (context.deleteSession(user)) {
+                    remove(user);
+                    notifyDataSetChanged();
+                }
             }
         });
         return v;

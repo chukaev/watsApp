@@ -31,10 +31,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by yuriy on 30/10/2017.
- */
-
 public class Sessions extends AppCompatActivity {
     ListView sessionsList;
     ArrayList<String> al = new ArrayList<>();
@@ -43,7 +39,7 @@ public class Sessions extends AppCompatActivity {
     boolean mInMultiChoiceMode;
     private ArraySwipeAdapterSample<String> mAdapter;
     StringRequest request;
-    private ArrayList<String> unreaded = new ArrayList<>();
+    private ArrayList<String> toRead = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,7 +186,7 @@ public class Sessions extends AppCompatActivity {
             String key;
 
             al.clear();
-            unreaded.clear();
+            toRead.clear();
 
             while(i.hasNext()) {
                 key = i.next().toString();
@@ -199,13 +195,14 @@ public class Sessions extends AppCompatActivity {
 
                     if (obj.getJSONObject(key).has("unread") && obj.getJSONObject(key).getBoolean("unread"))
 
-                        unreaded.add(key);
+                        toRead.add(key);
 
                     al.add(key);
                 }
             }
 
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             e.printStackTrace();
         }
 
@@ -213,10 +210,15 @@ public class Sessions extends AppCompatActivity {
             startActivity(new Intent(this, Users.class));
             this.finish();
         }
+
         else{
             sessionsList.setVisibility(View.VISIBLE);
-            mAdapter =  new ArraySwipeAdapterSample<>(this, R.layout.listview_item, R.id.position, al, unreaded);
-            sessionsList.setAdapter(mAdapter);
+            if (mAdapter == null) {
+
+                mAdapter = new ArraySwipeAdapterSample<>(this, R.layout.listview_item, R.id.position, al, toRead);
+                sessionsList.setAdapter(mAdapter);
+            }
+            else mAdapter.notifyDataSetChanged();
         }
 
         pd.dismiss();

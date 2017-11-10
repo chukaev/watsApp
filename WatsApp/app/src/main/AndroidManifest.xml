@@ -21,7 +21,7 @@
         <activity android:name=".activity.Users"     />
         <activity android:name=".activity.Sessions"  />
         <activity android:name=".activity.Chat"      />
-        <activity android:name=".Broadcast" />
+        <activity android:name=".activity.Broadcast" />
     </application>
 
 </manifest>

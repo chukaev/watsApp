@@ -146,6 +146,7 @@ public class Users extends AppCompatActivity {
                         users.add(al.get(i));
                     }
                 String[] usersArray = new String[users.size()];
+                usersArray = users.toArray(usersArray);
                 intent.putExtra("users", usersArray);
                 startActivity(intent);
                 finish();
