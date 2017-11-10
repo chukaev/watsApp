@@ -1,0 +1,104 @@
+machine machine3 refines machine2  sees ctx0
+
+variables user content chat active chatcontent muted owner
+  inactive toread
+  ch_size ch_seq 
+  c_size c_seq
+  u_size u_seq
+
+invariants
+  @invr31 c_size ≥ 0
+  @invr30 u_size ≥ 0
+  @invr32 ch_size ≥ 0
+  @invr33 u_seq ∈ (1‥u_size) ⤖ user
+  @invr34 c_seq ∈ (1‥c_size) ⤖ content
+  @invr35 ch_seq ∈ (1‥ch_size) ⤖ chat
+  @invr36 user = {i · i∈1‥u_size ∧ i∈dom(u_seq) ∣ u_seq(i)}
+  @invr37 content = {i · i∈1‥c_size ∧ i∈dom(c_seq) ∣ c_seq(i)}
+  @invr38 chat = {i · i∈1‥ch_size ∧ i∈dom(ch_seq) ∣ ch_seq(i)}
+
+events
+  event INITIALISATION extends INITIALISATION
+  begin
+    @initr31 c_size ≔ 0
+    @initr32 c_seq ≔ ∅
+    @initr33 u_size ≔ 0
+    @initr34 u_seq ≔ ∅
+    @initr35 ch_size ≔ 0
+    @init36 ch_seq ≔ ∅
+  end
+
+  event create_chat_session // US-01
+  extends create_chat_session
+  then
+    @actr31 ch_size ≔ ch_size + 1
+    @actr32 ch_seq ≔ ch_seq ∪ {ch_size+1 ↦ (u1 ↦ u2)}
+  end
+
+  event select_chat // US-02
+  extends select_chat
+  end
+
+  event chatting // US-03
+  extends chatting
+  then
+    @actr31 c_size ≔ c_size + 1
+    @actr32 c_seq ≔ c_seq ∪ {c_size+1 ↦c}
+    @actr33 ch_size ≔ ch_size + 1
+    @actr34 ch_seq ≔ ch_seq ∪({ch_size+1 ↦(u2↦u1)} ⩥ ran(ch_seq) )
+  end
+
+  event delete_content // US-04
+  extends delete_content
+  then
+    @actr31 c_seq ≔  { cc · cc =c ∧ chatcontent ∈ user → (content∖{cc}⇸ ℙ(user×user)) ∣ c_seq∼(cc)} ⩤ c_seq
+  end
+
+  event remove_content // US-04
+  extends remove_content
+  then
+    @actr31 c_seq ≔  { cc · cc =c ∧ chatcontent ∈ user → (content∖{cc}⇸ ℙ(user×user)) ∣ c_seq∼(cc)} ⩤ c_seq
+  end
+
+  event delete_chat_session // US-05
+  extends delete_chat_session
+  then
+    @actr32 ch_seq ≔ ch_seq ⩥ {u1↦u2}
+    @actr33 c_seq ≔  { cc · cc ∈content  ∧ chatcontent ∈ user → (content∖{cc}⇸ ℙ(user×user)) ∣ c_seq∼(cc)} ⩤ c_seq
+  end
+
+  event mute_chat // US-06
+  extends mute_chat
+  end
+
+  event unmute_chat // US-07
+  extends unmute_chat
+  end
+
+  event broadcast1 // US-08
+  extends broadcast1
+  end
+
+  event forward1 // US-09
+  extends forward1
+  end
+
+  event broadcast2 // US-08
+  extends broadcast2
+  then
+    @actr31 c_size ≔ c_size + 1
+    @actr32 c_seq ≔c_seq ∪({c_size+1 ↦c} ⩥ ran(c_seq) )
+  end
+
+  event forward2 // US-09
+  extends forward2
+  end
+
+  event unselect_chat // US-10
+  extends unselect_chat
+  end
+
+  event reading_chat // EX-02
+  extends reading_chat
+  end
+end

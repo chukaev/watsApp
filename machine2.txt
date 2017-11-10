@@ -1,62 +1,70 @@
-machine machine2 refines machine1  sees ctx0 
+machine machine2 refines machine1  sees ctx0
 
-variables user content chat active chatcontent muted toread inactive owner 
+variables user content chat active chatcontent muted owner  
+  inactive toread
 
 invariants
-  @invr21 owner ∈ content → user
-  @invr22 ∀ cc, uu1, uu2 · cc ∈ content ∧ uu1 ∈ user ∧ uu2 ∈ user ∧ (cc ↦ uu1) ∈ owner ⇒ (cc ↦ uu2) ∉ owner
+  @inv2r1 dom(owner) = content
+  @inv2r2 ∀ cc, uu1 · cc ∈ content ∧ uu1 ∈ user ∧ (cc ↦ uu1) ∈ owner ⇒ ({owner(cc)} ∖ {uu1}) = ∅
+
 
 events
-  event INITIALISATION extends INITIALISATION 
-    then
-      @initr21 owner ≔ ∅
+  event INITIALISATION extends INITIALISATION
   end
 
   event create_chat_session // US-01
-  extends create_chat_session 
+  extends create_chat_session
   end
 
   event select_chat // US-02
-  extends select_chat 
+  extends select_chat
   end
 
   event chatting // US-03
-  extends chatting 
-    then
-      @act2r1 owner ≔  owner ∪ {c ↦ u1}
+  extends chatting
   end
 
-  event delete_content // US-04
-  extends delete_content 
+  event delete_content // US-04a
+  extends delete_content
   end
 
-  event remove_content // US-04
-  extends remove_content 
+  event remove_content // US-04b
+  extends remove_content
   end
 
   event delete_chat_session // US-05
-  extends delete_chat_session 
+  extends delete_chat_session
   end
 
   event mute_chat // US-06
-  extends mute_chat 
+  extends mute_chat
   end
 
   event unmute_chat // US-07
-  extends unmute_chat 
+  extends unmute_chat
   end
 
-  event broadcast // US-08
-  extends broadcast 
-    then
-      @act2r1 owner ≔ owner ∪ {c ↦ u1}
+  event broadcast1 // US-08
+  extends broadcast1
   end
 
-  event forward // US-09
-  extends forward 
+  event forward1 // US-09
+  extends forward1
+  end
+
+  event broadcast2 // US-08
+  extends broadcast2
+  end
+
+  event forward2 // US-09
+  extends forward2
   end
 
   event unselect_chat // US-10
-  extends unselect_chat 
+  extends unselect_chat
+  end
+
+  event reading_chat // EX-02
+  extends reading_chat
   end
 end
