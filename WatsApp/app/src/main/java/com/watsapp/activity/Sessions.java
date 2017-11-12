@@ -41,6 +41,29 @@ public class Sessions extends AppCompatActivity {
     StringRequest request;
     private ArrayList<String> toRead = new ArrayList<>();
 
+    private void setWithId(final String user) {
+        String url = getString(R.string.db_ref) + "users.json";
+
+        StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
+            @Override
+            public void onResponse(String s) {
+                try {
+                    JSONObject obj = new JSONObject(s);
+                    UserDetails.chatWith_id = obj.getJSONObject(user).getInt("id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        },new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println("" + volleyError);
+            }
+        });
+
+        Volley.newRequestQueue(Sessions.this).add(request);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +114,26 @@ public class Sessions extends AppCompatActivity {
                     }
                 } else {
                     UserDetails.chatWith = al.get(position);
+
+                    String url = getString(R.string.db_ref) + "users.json";
+                    StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
+                        @Override
+                        public void onResponse(String s) {
+                            try {
+                                JSONObject obj = new JSONObject(s);
+                                UserDetails.chatWith_id = obj.getJSONObject(UserDetails.chatWith).getInt("id");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    },new Response.ErrorListener(){
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+                            System.out.println("" + volleyError);
+                        }
+                    });
+                    Volley.newRequestQueue(Sessions.this).add(request);
+
                     startActivity(new Intent(Sessions.this, Chat.class));
                     finish();
                 }

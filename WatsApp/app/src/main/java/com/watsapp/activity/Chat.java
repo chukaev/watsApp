@@ -19,6 +19,7 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ServerValue;
+import com.watsapp.App;
 import com.watsapp.R;
 import com.watsapp.UserDetails;
 
@@ -59,6 +60,7 @@ public class Chat extends AppCompatActivity {
                     map.put("message", messageText);
                     map.put("user", UserDetails.username);
                     map.put("timestamp", ServerValue.TIMESTAMP);
+//                    if (App.getMachine().get_chat())
                     refFrom.push().setValue(map);
 
                     map.put("unread", true);

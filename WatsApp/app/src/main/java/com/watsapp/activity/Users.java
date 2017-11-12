@@ -35,6 +35,7 @@ public class Users extends AppCompatActivity {
     ListView usersList;
     TextView noUsersText;
     ArrayList<String> al = new ArrayList<>();
+    ArrayList<Integer> al_ids = new ArrayList<>();
     ProgressDialog pd;
     boolean mInMultiChoiceMode;
     MenuItem sendButton;
@@ -113,6 +114,7 @@ public class Users extends AppCompatActivity {
                     }
                 } else {
                     // do whatever you should as in normal non-multi item click
+                    UserDetails.chatWith_id = al_ids.get(position);
                     UserDetails.chatWith = al.get(position);
                     startActivity(new Intent(Users.this, Chat.class));
                     finish();
@@ -167,9 +169,10 @@ public class Users extends AppCompatActivity {
 
                 key = i.next().toString();
 
-                if(!key.equals(UserDetails.username) && !key.equals("nextIndex"))
+                if(!key.equals(UserDetails.username))
                 {
                     al.add(key);
+                    al_ids.add(obj.getJSONObject(key).getInt("id"));
                 }
             }
 
