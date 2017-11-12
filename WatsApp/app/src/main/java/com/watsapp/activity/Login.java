@@ -77,6 +77,7 @@ public class Login extends AppCompatActivity {
                                         Toast.makeText(Login.this, "user not found", Toast.LENGTH_LONG).show();
                                     }
                                     else if(obj.getJSONObject(user).getString("password").equals(pass)){
+                                        UserDetails.id = obj.getJSONObject(user).getInt("id");
                                         UserDetails.username = user;
                                         UserDetails.password = pass;
                                         startActivity(new Intent(Login.this, Sessions.class));

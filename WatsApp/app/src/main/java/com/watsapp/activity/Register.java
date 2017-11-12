@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.firebase.client.Firebase;
+import com.watsapp.Machine;
 import com.watsapp.R;
 
 import org.json.JSONException;
@@ -79,9 +80,12 @@ public class Register extends AppCompatActivity {
                                     @Override
                                     public void onResponse(String s) {
                                         Firebase reference = new Firebase(getString(R.string.db_ref) + "users");
+                                        Integer id = Machine.get_nextUserIndex();
 
                                         if(s.equals("null")) {
                                             reference.child(user).child("password").setValue(pass);
+                                            reference.child(user).child("id").setValue(id);
+                                            Machine.set_nextUserIndex(id+1);
                                             Toast.makeText(Register.this, "registration successful", Toast.LENGTH_LONG).show();
                                         }
                                         else {
@@ -90,6 +94,8 @@ public class Register extends AppCompatActivity {
 
                                                 if (!obj.has(user)) {
                                                     reference.child(user).child("password").setValue(pass);
+                                                    reference.child(user).child("id").setValue(id);
+                                                    Machine.set_nextUserIndex(id+1);
                                                     Toast.makeText(Register.this, "registration successful", Toast.LENGTH_LONG).show();
                                                     moveTaskToBack(true);
                                                 } else {
