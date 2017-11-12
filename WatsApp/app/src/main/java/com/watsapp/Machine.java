@@ -1,10 +1,14 @@
 package com.watsapp;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.firebase.client.Firebase;
+import com.firebase.client.core.Context;
+import com.watsapp.activity.Register;
 import com.watsapp.sequential.machine3;
 
 import org.json.JSONException;
@@ -15,24 +19,30 @@ import org.json.JSONObject;
  */
 
 public class Machine extends machine3 {
-    private static Integer nextUserIndex;
+    private Integer nextUserIndex;
 
-    public static Integer get_nextUserIndex(){
-        String url = "https://models-chat.firebaseio.com/" + "nextUserIndex.json";
+    public Machine() {}
+
+    public void setNextUserIndex(Integer index) {
+        this.nextUserIndex = index;
+    }
+
+    public Integer get_nextUserIndex(){
+        String url = "https://models-chat.firebaseio.com/" + "users.json";
 
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
             @Override
             public void onResponse(String s) {
-                Firebase reference = new Firebase("https://models-chat.firebaseio.com/" + "nextUserIndex");
+                Firebase reference = new Firebase("https://models-chat.firebaseio.com/" + "users");
 
                 if(s.equals("null")) {
-                    reference.child("nextUserIndex").setValue(1);
-                    nextUserIndex = 1;
+                    reference.child("nextIndex").child("User").setValue(1);
+                    new Machine().set_nextUserIndex(1);
                 }
                 else {
                     try {
                         JSONObject obj = new JSONObject(s);
-                        nextUserIndex = obj.getInt("nextUserIndex");
+                        new Machine().set_nextUserIndex(obj.getJSONObject("nextIndex").getInt("User"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -46,31 +56,25 @@ public class Machine extends machine3 {
             }
         });
 
-        return nextUserIndex;
+//        RequestQueue rQueue = Volley.newRequestQueue();
+//        rQueue.add(request);
+
+        if (nextUserIndex != null) {
+            return nextUserIndex;
+        } else {
+            return 1;
+        }
     }
 
-    public static void set_nextUserIndex(final Integer index){
-        String url = "https://models-chat.firebaseio.com/" + "nextUserIndex.json";
+    public void set_nextUserIndex(final Integer index){
+        String url = "https://models-chat.firebaseio.com/" + "users.json";
 
         StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>(){
             @Override
             public void onResponse(String s) {
-                Firebase reference = new Firebase("https://models-chat.firebaseio.com/" + "nextUserIndex");
+                Firebase reference = new Firebase("https://models-chat.firebaseio.com/" + "users");
 
-                if(s.equals("null")) {
-                    reference.child("nextUserIndex").setValue(index);
-                    nextUserIndex = index;
-                }
-                else {
-                    try {
-                        JSONObject obj = new JSONObject(s);
-                        nextUserIndex = obj.getInt("nextUserIndex");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                reference.child("nextUserIndex").setValue(index);
+                reference.child("nextUserIndex").child("User").setValue(index);
                 nextUserIndex = index;
             }
 

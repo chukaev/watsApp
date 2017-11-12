@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/WatsApp.iml" filepath="$PROJECT_DIR$/WatsApp.iml" />
-      <module fileurl="file://C:\Users\Albina\Desktop\models\watsapp_model\WatsApp\WatsApp.iml" filepath="C:\Users\Albina\Desktop\models\watsapp_model\WatsApp\WatsApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Albina\Desktop\models\watsapp_model\WatsApp\app\app.iml" filepath="C:\Users\Albina\Desktop\models\watsapp_model\WatsApp\app\app.iml" />
     </modules>
   </component>
 </project>
