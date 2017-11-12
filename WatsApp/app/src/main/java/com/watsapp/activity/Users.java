@@ -167,7 +167,7 @@ public class Users extends AppCompatActivity {
 
                 key = i.next().toString();
 
-                if(!key.equals(UserDetails.username))
+                if(!key.equals(UserDetails.username) && !key.equals("nextIndex"))
                 {
                     al.add(key);
                 }
