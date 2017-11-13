@@ -37,7 +37,7 @@ public class Sessions extends AppCompatActivity {
         setContentView(R.layout.activity_sessions);
         getSupportActionBar().setTitle("Sessions");
 
-        sessionsList = findViewById(R.id.sessionsList);
+        sessionsList = (ListView) findViewById(R.id.sessionsList);
 
         BSet<Integer> bSessions = App.machine.get_chat().domainSubtraction(new BSet<>(UserDetails.user)).domain();
         Integer[] arSessions = new Integer[bSessions.size()];
