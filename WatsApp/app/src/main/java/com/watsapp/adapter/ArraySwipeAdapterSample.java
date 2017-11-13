@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.watsapp.App;
 import com.watsapp.R;
 import com.watsapp.activity.Sessions;
 import com.daimajia.swipe.adapters.ArraySwipeAdapter;

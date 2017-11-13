@@ -33,6 +33,8 @@ public class Sessions extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        App.machine.set_active(App.machine.get_active().domainSubtraction(new BSet<>(UserDetails.user)));
+
         setContentView(R.layout.activity_sessions);
         getSupportActionBar().setTitle("Sessions");
 
@@ -79,7 +81,6 @@ public class Sessions extends AppCompatActivity {
                         sessionsList.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
                     }
                 } else {
-                    App.machine.set_active(App.machine.get_active().domainSubtraction(new BSet<>(UserDetails.user)));
                     UserDetails.chatWith = users.get(position);
                     if (!App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith))
                         if (App.machine.get_create_chat_session().guard_create_chat_session(UserDetails.user, UserDetails.chatWith))

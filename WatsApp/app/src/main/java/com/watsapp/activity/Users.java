@@ -38,6 +38,8 @@ public class Users extends AppCompatActivity {
         setContentView(R.layout.activity_users);
         getSupportActionBar().setTitle("Users");
 
+        App.machine.set_active(App.machine.get_active().domainSubtraction(new BSet<>(UserDetails.user)));
+
         usersList = (ListView) findViewById(R.id.usersList);
         noUsersText = (TextView) findViewById(R.id.noUsersText);
 
@@ -113,7 +115,6 @@ public class Users extends AppCompatActivity {
                     }
                 } else {
                     // do whatever you should as in normal non-multi item click
-                    App.machine.set_active(App.machine.get_active().domainSubtraction(new BSet<>(UserDetails.user)));
                     UserDetails.chatWith = users.get(position);
                     if (!App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith))
                         if (App.machine.get_create_chat_session().guard_create_chat_session(UserDetails.user, UserDetails.chatWith))
@@ -127,7 +128,6 @@ public class Users extends AppCompatActivity {
                         finish();
                     }
                 }
-
             }
         });
     }

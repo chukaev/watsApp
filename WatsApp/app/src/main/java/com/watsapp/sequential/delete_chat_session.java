@@ -44,12 +44,12 @@ public class delete_chat_session{
 			machine.set_chat(chat_tmp.difference(new BRelation<>(new Pair<>(u1, u2))));
 			machine.set_active(active_tmp.difference(new BRelation<>(new Pair<>(u1, u2))));
 			machine.set_muted(muted_tmp.difference(new BRelation<>(new Pair<>(u1, u2))));
-			machine.set_chatcontent(null); // Set Comprehension: feature not supported by EventB2Java
-			machine.set_content(null); // Set Comprehension: feature not supported by EventB2Java
-			machine.set_owner(null); // Set Comprehension: feature not supported by EventB2Java
+			//machine.set_chatcontent(null); // Set Comprehension: feature not supported by EventB2Java
+			//machine.set_content(null); // Set Comprehension: feature not supported by EventB2Java
+			//machine.set_owner(null); // Set Comprehension: feature not supported by EventB2Java
 			machine.set_toread(toread_tmp.difference(new BRelation<>(new Pair<>(u1, u2))));
 			machine.set_inactive(inactive_tmp.difference(new BRelation<>(new Pair<>(u1, u2))));
-			machine.set_c_seq(null); // Set Comprehension: feature not supported by EventB2Java
+			//machine.set_c_seq(null); // Set Comprehension: feature not supported by EventB2Java
 
 			System.out.println("delete_chat_session executed u1: " + u1 + " u2: " + u2 + " ");
 		}
