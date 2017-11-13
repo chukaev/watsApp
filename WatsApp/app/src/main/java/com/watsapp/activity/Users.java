@@ -17,7 +17,9 @@ import android.widget.TextView;
 import com.watsapp.App;
 import com.watsapp.R;
 import com.watsapp.UserDetails;
+import com.watsapp.prelude.BRelation;
 import com.watsapp.prelude.BSet;
+import com.watsapp.prelude.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,10 +113,10 @@ public class Users extends AppCompatActivity {
                     }
                 } else {
                     // do whatever you should as in normal non-multi item click
+                    App.machine.set_active(App.machine.get_active().domainSubtraction(new BSet<>(UserDetails.user)));
                     UserDetails.chatWith = users.get(position);
                     if (!App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith))
                         if (App.machine.get_create_chat_session().guard_create_chat_session(UserDetails.user, UserDetails.chatWith))
-
                             App.machine.get_create_chat_session().run_create_chat_session(UserDetails.user, UserDetails.chatWith);
 
                     if (App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith)) {
