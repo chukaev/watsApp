@@ -10,6 +10,7 @@ import android.widget.ScrollView;
 
 import com.firebase.client.Firebase;
 import com.firebase.client.ServerValue;
+import com.watsapp.App;
 import com.watsapp.R;
 import com.watsapp.UserDetails;
 
@@ -20,14 +21,12 @@ public class Broadcast extends AppCompatActivity {
     ImageView sendButton;
     EditText messageArea;
     ScrollView scrollView;
-    String[] users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_broadcast);
         getSupportActionBar().setTitle("Broadcast");
-        users = getIntent().getStringArrayExtra("users");
         sendButton = (ImageView)findViewById(R.id.sendButton);
         messageArea = (EditText)findViewById(R.id.messageArea);
         scrollView = (ScrollView)findViewById(R.id.scrollView);
@@ -41,14 +40,14 @@ public class Broadcast extends AppCompatActivity {
                 if(!messageText.equals("")){
                     HashMap map = new HashMap();
                     map.put("message", messageText);
-                    map.put("user", UserDetails.username);
+                    map.put("user", UserDetails.user);
                     map.put("timestamp", ServerValue.TIMESTAMP);
-                    for (String chatWith: users) {
-                        new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s/messages", UserDetails.username, chatWith)).push().setValue(map);
+                    for (Integer chatWith: App.users) {
+                        new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s/messages", UserDetails.user, chatWith)).push().setValue(map);
                     }
                     map.put("unread", true);
-                    for (String chatWith: users) {
-                        Firebase refTo = new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s", chatWith, UserDetails.username));
+                    for (Integer chatWith: App.users) {
+                        Firebase refTo = new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s", chatWith, UserDetails.user));
                         refTo.child("messages").push().setValue(map);
                         refTo.child("to_read").push().setValue(true);
                     }

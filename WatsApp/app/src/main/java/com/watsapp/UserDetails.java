@@ -1,7 +1,7 @@
 package com.watsapp;
 
 public class UserDetails {
-    public static String username = "";
+    public static Integer user;
     public static String password = "";
-    public static String chatWith = "";
+    public static Integer chatWith;
 }

@@ -18,7 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.Register"  />
         <activity android:name=".activity.Users"     />
         <activity android:name=".activity.Sessions"  />
         <activity android:name=".activity.Chat"      />

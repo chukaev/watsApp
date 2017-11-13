@@ -37,7 +37,7 @@ public class Chat extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        getSupportActionBar().setTitle(UserDetails.chatWith);
+        getSupportActionBar().setTitle(UserDetails.chatWith.toString());
 
         layout = (LinearLayout) findViewById(R.id.layout1);
         layout_2 = (RelativeLayout)findViewById(R.id.layout2);
@@ -46,8 +46,8 @@ public class Chat extends AppCompatActivity {
         scrollView = (ScrollView)findViewById(R.id.scrollView);
 
         Firebase.setAndroidContext(this);
-        refFrom = new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s/messages", UserDetails.username, UserDetails.chatWith));
-        refTo = new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s", UserDetails.chatWith, UserDetails.username));
+        refFrom = new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s/messages", UserDetails.user, UserDetails.chatWith));
+        refTo = new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/%s", UserDetails.chatWith, UserDetails.user));
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +57,7 @@ public class Chat extends AppCompatActivity {
 
                     HashMap map = new HashMap();
                     map.put("message", messageText);
-                    map.put("user", UserDetails.username);
+                    map.put("user", UserDetails.user);
                     map.put("timestamp", ServerValue.TIMESTAMP);
                     refFrom.push().setValue(map);
 
@@ -82,7 +82,7 @@ public class Chat extends AppCompatActivity {
                 String userName = map.get("user").toString();
                 boolean unread = map.get("unread") != null && map.get("unread").toString() == "true";
 
-                if(userName.equals(UserDetails.username)){
+                if(userName.equals(UserDetails.user)){
                     addMessageBox(message, 1, unread);
                 }
                 else{
@@ -141,6 +141,14 @@ public class Chat extends AppCompatActivity {
             textView.setTextColor(Color.DKGRAY);
 
         layout.addView(textView);
+        textView.setOnLongClickListener(new TextView.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                v.setBackgroundColor(Color.RED);
+                return false;
+            }
+        });
         scrollView.fullScroll(View.FOCUS_DOWN);
     }
 }

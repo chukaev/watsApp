@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -14,31 +13,21 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.watsapp.App;
 import com.watsapp.R;
 import com.watsapp.UserDetails;
 import com.watsapp.adapter.ArraySwipeAdapterSample;
-import com.firebase.client.Firebase;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.watsapp.prelude.BSet;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Arrays;
 
 public class Sessions extends AppCompatActivity {
     ListView sessionsList;
-    ArrayList<String> al = new ArrayList<>();
-    ProgressDialog pd;
+    ArrayList<Integer> users = new ArrayList<>();
     MenuItem sendButton;
     boolean mInMultiChoiceMode;
     private ArraySwipeAdapterSample<String> mAdapter;
-    StringRequest request;
     private ArrayList<String> toRead = new ArrayList<>();
 
     @Override
@@ -48,27 +37,26 @@ public class Sessions extends AppCompatActivity {
         setContentView(R.layout.activity_sessions);
         getSupportActionBar().setTitle("Sessions");
 
-        sessionsList    = (ListView) findViewById(R.id.sessionsList);
+        sessionsList = findViewById(R.id.sessionsList);
 
-        pd = new ProgressDialog(Sessions.this);
-        pd.setMessage("Loading...");
-        pd.show();
+        BSet<Integer> bSessions = App.machine.get_chat().domainSubtraction(new BSet<>(UserDetails.user)).domain();
+        Integer[] arSessions = new Integer[bSessions.size()];
+        bSessions.toArray(arSessions);
+        ArrayList<Integer> sessions = new ArrayList<>(Arrays.asList(arSessions));
 
-        String url = getString(R.string.db_ref) + "users/"+ UserDetails.username+"/sessions.json";
+        if (bSessions.size() <= 0) {
+            startActivity(new Intent(this, Users.class));
+            this.finish();
+        } else {
+            sessionsList.setVisibility(View.VISIBLE);
 
-        request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                doOnSuccess(s);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                System.out.println("" + volleyError);
-            }
-        });
+            if (mAdapter == null) {
 
-        Volley.newRequestQueue(Sessions.this).add(request);
+                mAdapter = new ArraySwipeAdapterSample<>(this, R.layout.listview_item, R.id.position, sessions, toRead);
+                sessionsList.setAdapter(mAdapter);
+            } else mAdapter.notifyDataSetChanged();
+        }
+
 
         sessionsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -85,14 +73,17 @@ public class Sessions extends AppCompatActivity {
 
                     if (sessionsList.isItemChecked(position)) {
                         sessionsList.getChildAt(position).setBackgroundColor(Color.BLUE);
-                    }
-                    else {
+                    } else {
                         sessionsList.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
                     }
                 } else {
-                    UserDetails.chatWith = al.get(position);
-                    startActivity(new Intent(Sessions.this, Chat.class));
-                    finish();
+                    UserDetails.chatWith = users.get(position);
+                    if (App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith)) {
+                        UserDetails.chatWith = users.get(position);
+                        App.machine.get_select_chat().run_select_chat(UserDetails.user, UserDetails.chatWith);
+                        startActivity(new Intent(Sessions.this, Chat.class));
+                        finish();
+                    }
                 }
             }
         });
@@ -101,7 +92,6 @@ public class Sessions extends AppCompatActivity {
 
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-
 
                 if (mInMultiChoiceMode) {
                     // if already in multi choice - do nothing
@@ -120,47 +110,35 @@ public class Sessions extends AppCompatActivity {
         });
     }
 
-    public boolean deleteSession(String user)
+    public boolean deleteSession(Integer user)
     {
-        Firebase.setAndroidContext(this);
-        new Firebase(String.format(getString(R.string.db_ref) + "users/%s/sessions/", UserDetails.username)).child(user).removeValue();
+        if(App.machine.get_delete_chat_session().guard_delete_chat_session(UserDetails.user, user))
 
-        if(sessionsList.getChildCount() == 1){
-            startActivity(new Intent(this, Users.class));
-            this.finish();
-        }
-        else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Volley.newRequestQueue(Sessions.this).add(request);
-                }
-            }, 2000);
-        }
+            App.machine.get_delete_chat_session().run_delete_chat_session(UserDetails.user, user);
+
+        else return false;
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        List<String> users = new ArrayList<>();
+
         int len = sessionsList.getCount();
         SparseBooleanArray checked = sessionsList.getCheckedItemPositions();
         if(checked!=null)
         for (int i = 0; i < len; i++)
             if (checked.get(i)) {
-                users.add(al.get(i));
+                App.users.add(users.get(i));
             }
-        String[] usersArray = new String[0];
-        usersArray = users.toArray(usersArray);
+
         switch (item.getItemId()) {
             case R.id.createSession:{
                 Intent intent = new Intent(Sessions.this, Users.class);
-                intent.putExtra("users", usersArray);
                 startActivity(intent);
                 return true;}
             case R.id.sendBroadcast:{
                 Intent intent = new Intent(Sessions.this, Broadcast.class);
-                intent.putExtra("users", usersArray);
                 startActivity(intent);
                 finish();
                 return true;}
@@ -176,51 +154,5 @@ public class Sessions extends AppCompatActivity {
         sendButton = menu.findItem(R.id.sendBroadcast);
         sendButton.setVisible(false);
         return true;
-    }
-
-    public void doOnSuccess(String s){
-        try {
-            JSONObject obj = new JSONObject(s);
-
-            Iterator i = obj.keys();
-            String key;
-
-            al.clear();
-            toRead.clear();
-
-            while(i.hasNext()) {
-                key = i.next().toString();
-
-                if(!key.equals(UserDetails.username)) {
-
-                    if (obj.getJSONObject(key).has("unread") && obj.getJSONObject(key).getBoolean("unread"))
-
-                        toRead.add(key);
-
-                    al.add(key);
-                }
-            }
-
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if(al.size() <=0){
-            startActivity(new Intent(this, Users.class));
-            this.finish();
-        }
-
-        else{
-            sessionsList.setVisibility(View.VISIBLE);
-            if (mAdapter == null) {
-
-                mAdapter = new ArraySwipeAdapterSample<>(this, R.layout.listview_item, R.id.position, al, toRead);
-                sessionsList.setAdapter(mAdapter);
-            }
-            else mAdapter.notifyDataSetChanged();
-        }
-
-        pd.dismiss();
     }
 }

@@ -42,10 +42,9 @@ public class ArraySwipeAdapterSample<T> extends ArraySwipeAdapter {
         v.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String user = (String) getItem(position);
+                Integer user = (Integer) getItem(position);
                 if (context.deleteSession(user)) {
                     remove(user);
-                    notifyDataSetChanged();
                 }
             }
         });
