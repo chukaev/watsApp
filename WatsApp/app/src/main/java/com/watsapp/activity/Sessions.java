@@ -1,6 +1,5 @@
 package com.watsapp.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -39,10 +38,13 @@ public class Sessions extends AppCompatActivity {
 
         sessionsList = (ListView) findViewById(R.id.sessionsList);
 
-        BSet<Integer> bSessions = App.machine.get_chat().domainSubtraction(new BSet<>(UserDetails.user)).domain();
-        Integer[] arSessions = new Integer[bSessions.size()];
-        bSessions.toArray(arSessions);
-        ArrayList<Integer> sessions = new ArrayList<>(Arrays.asList(arSessions));
+        BSet<Integer> bSessions = App.machine.get_chat().restrictDomainTo(new BSet<>(UserDetails.user)).range();
+        ArrayList<Integer> sessions = new ArrayList<>(Arrays.asList(Arrays.copyOf(bSessions.toArray(), bSessions.size(), Integer[].class)));
+
+        BSet<Integer> bUsers = App.machine.get_user();
+        Integer[] arUsers = new Integer[bUsers.size()];
+        bUsers.toArray(arUsers);
+        users = new ArrayList<>(Arrays.asList(arUsers));
 
         if (bSessions.size() <= 0) {
             startActivity(new Intent(this, Users.class));
@@ -77,10 +79,16 @@ public class Sessions extends AppCompatActivity {
                         sessionsList.getChildAt(position).setBackgroundColor(Color.TRANSPARENT);
                     }
                 } else {
+                    App.machine.set_active(App.machine.get_active().domainSubtraction(new BSet<>(UserDetails.user)));
                     UserDetails.chatWith = users.get(position);
+                    if (!App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith))
+                        if (App.machine.get_create_chat_session().guard_create_chat_session(UserDetails.user, UserDetails.chatWith))
+                            App.machine.get_create_chat_session().run_create_chat_session(UserDetails.user, UserDetails.chatWith);
+
                     if (App.machine.get_select_chat().guard_select_chat(UserDetails.user, UserDetails.chatWith)) {
-                        UserDetails.chatWith = users.get(position);
+
                         App.machine.get_select_chat().run_select_chat(UserDetails.user, UserDetails.chatWith);
+                        UserDetails.chatWith = users.get(position);
                         startActivity(new Intent(Sessions.this, Chat.class));
                         finish();
                     }
