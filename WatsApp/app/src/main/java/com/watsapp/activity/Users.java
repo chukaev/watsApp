@@ -38,8 +38,8 @@ public class Users extends AppCompatActivity {
         setContentView(R.layout.activity_users);
         getSupportActionBar().setTitle("Users");
 
-        usersList = findViewById(R.id.usersList);
-        noUsersText = findViewById(R.id.noUsersText);
+        usersList = (ListView) findViewById(R.id.usersList);
+        noUsersText = (TextView) findViewById(R.id.noUsersText);
 
         BSet<Integer> bUsers = App.machine.get_user();
         Integer[] arUsers = new Integer[bUsers.size()];
