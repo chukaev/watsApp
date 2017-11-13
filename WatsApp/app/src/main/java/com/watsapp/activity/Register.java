@@ -17,8 +17,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.firebase.client.Firebase;
+import com.watsapp.App;
 import com.watsapp.Machine;
 import com.watsapp.R;
+import com.watsapp.prelude.BSet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,7 +86,8 @@ public class Register extends AppCompatActivity {
                                         if(s.equals("null")) {
                                             reference.child(user).child("password").setValue(pass);
                                             reference.child(user).child("id").setValue(1);
-                                            reference.child("nextIndex").child("User").setValue(1);
+                                            App.getMachine().add_user(new BSet<Integer>(1));
+                                            reference.child("nextIndex").child("user").setValue(1);
                                             Toast.makeText(Register.this, "registration successful", Toast.LENGTH_LONG).show();
                                         }
                                         else {
@@ -96,7 +99,8 @@ public class Register extends AppCompatActivity {
 
                                                     Integer id = obj.getJSONObject("nextIndex").getInt("User");
                                                     reference.child(user).child("id").setValue(id);
-                                                    reference.child("nextIndex").child("User").setValue(id+1);
+                                                    App.getMachine().add_user(new BSet<Integer>(id));
+                                                    reference.child("nextIndex").child("user").setValue(id+1);
                                                     Toast.makeText(Register.this, "registration successful", Toast.LENGTH_LONG).show();
                                                     moveTaskToBack(true);
                                                 } else {
